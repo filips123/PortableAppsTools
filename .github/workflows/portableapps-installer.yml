@@ -1,0 +1,43 @@
+name: Update PortableApps.com Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: PortableApps.com Installer Version
+
+permissions:
+  attestations: write
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: Release Docker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Download the package
+        id: download
+        run: curl "https://download2.portableapps.com/portableapps/PortableApps.comInstaller/PortableApps.comInstaller_{{ github.event.inputs.version }}.paf.exe" -o PortableAppsInstaller.paf.exe
+
+      - name: Attest the package
+        id: attest
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: PortableAppsInstaller.paf.exe
+
+      - name: Release the package
+        id: release
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191
+        with:
+          tag_name: PortableAppsInstaller/${{ github.event.inputs.version }}
+          files: |
+            PortableAppsInstaller.paf.exe
+            ${{ steps.attest.outputs.bundle-path }}
