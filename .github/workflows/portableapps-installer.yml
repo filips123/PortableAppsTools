@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    name: Release Docker
+    name: Release Package
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Download the package
         id: download
-        run: curl "https://download2.portableapps.com/portableapps/PortableApps.comInstaller/PortableApps.comInstaller_{{ github.event.inputs.version }}.paf.exe" -o PortableAppsInstaller.paf.exe
+        run: curl "https://download2.portableapps.com/portableapps/PortableApps.comInstaller/PortableApps.comInstaller_${{ github.event.inputs.version }}.paf.exe" -o PortableAppsInstaller.paf.exe
 
       - name: Attest the package
         id: attest
